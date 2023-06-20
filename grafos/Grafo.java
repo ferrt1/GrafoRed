@@ -52,35 +52,23 @@ public class Grafo {
 	    }
 	}
 
-	public void agregarVertice(Localidad v) {
-		if (v != null && !vecinos.containsKey(v))
-			vecinos.put(v, new LinkedList<Localidad>());
+	public void agregarVertice(Localidad vertice) {
+		if (vertice != null && !vecinos.containsKey(vertice))
+			vecinos.put(vertice, new LinkedList<Localidad>());
 	}
 
-
-	public boolean estaCompleto() {
-		return todosLosVerticesSonCompletos();
-	}
-
-	private boolean todosLosVerticesSonCompletos() {
-		boolean acum=true;
-		for(Localidad localidad : this.vecinos.keySet()) {
-			acum = acum && this.vecinos.get(localidad).size() - 1 == this.vecinos.size();
-		}
-		return acum;
-	}
-
-	public void agregarArista(Localidad v1, Localidad v2) {
-		if (verificarVertices(v1, v2))
+	public void agregarArista(Localidad vertice1, Localidad vertice2) {
+		if (verificarVertices(vertice1, vertice2))
 			return;
 
-		double costoArista = Costo.obtenerCosto(v1, v2, costoPorKm, mayor300k, costoPorProvincia);
+		double costoArista = Costo.obtenerCosto(vertice1, vertice2, costoPorKm, mayor300k, costoPorProvincia);
 		costoArista = Math.round(costoArista * 100.0) / 100.0;
-		ConectorLocalidades nuevoCable = new ConectorLocalidades(v1, v2, Costo.calcularDistancia(v1, v2), costoArista);
+		ConectorLocalidades nuevoCable = new ConectorLocalidades(vertice1, vertice2,
+				Costo.calcularDistancia(vertice1, vertice2), costoArista);
 		if (!aristas.contains(nuevoCable)) {
 			aristas.add(nuevoCable);
-			vecinos.get(v1).add(v2);
-			vecinos.get(v2).add(v1);
+			vecinos.get(vertice1).add(vertice2);
+			vecinos.get(vertice2).add(vertice1);
 			sumarCosto(costoArista);
 		}
 	}
@@ -91,12 +79,12 @@ public class Grafo {
 	}
 
 
-	public boolean existeArista(Localidad v1, Localidad v2) {
-		if (v1 == null || v2 == null) {
+	public boolean existeArista(Localidad vertice1, Localidad vertice2) {
+		if (vertice1 == null || vertice2 == null) {
 			return false;
 		}
-		return aristas.contains(new ConectorLocalidades(v1, v2, Costo.calcularDistancia(v1, v2), 
-				Costo.obtenerCosto(v1, v2, costoPorKm, mayor300k, costoPorKm)));
+		return aristas.contains(new ConectorLocalidades(vertice1, vertice2, Costo.calcularDistancia(vertice1, vertice2), 
+				Costo.obtenerCosto(vertice1, vertice2, costoPorKm, mayor300k, costoPorKm)));
 	}
 
 	public LinkedList<Localidad> vecinos(Localidad v) {
@@ -124,25 +112,32 @@ public class Grafo {
 		for (Localidad localidad : vecinos.keySet())
 			System.out.println(localidad.toString());
 	}
+	
 	@Override
 	public String toString() {
-		StringBuilder cadena = new StringBuilder();
+	    StringBuilder cadena = new StringBuilder();
+	    
+	    cadena.append("Costo por kilómetro: ").append(costoPorKm).append("\n");
+	    cadena.append("Costo por provincias distintas: ").append(costoPorProvincia).append("\n");
+	    cadena.append("Porcentaje si supera 300KM: ").append(mayor300k).append("\n");
 
-		for (Localidad localidad : vecinos.keySet()) {
-			cadena.append(localidad.getNombre() + ": ");
-			for (Localidad vecino : vecinos.get(localidad)) {
-				cadena.append(vecino.getNombre() + " -- ");
-			}
-			cadena.append("\n");
-		}
+	    for (Localidad localidad : vecinos.keySet()) {
+	        cadena.append(localidad.getNombre()).append(" (").append(localidad.getProvincia()).append("): ");
+	        for (Localidad vecino : vecinos.get(localidad)) {
+	            cadena.append(vecino.getNombre()).append(" -- ");
+	        }
+	        cadena.append("\n");
+	    }
 
-		for (ConectorLocalidades conexion : aristas) {
-			cadena.append(conexion.getVertice1().getNombre() + " ------ " + conexion.getVertice2().getNombre() + " : "
-					+ conexion.getDistancia() + "KM " + "$" + conexion.getCosto());
-			cadena.append("\n");
-		}
+	    for (ConectorLocalidades conexion : aristas) {
+	        cadena.append(conexion.getVertice1().getNombre()).append(" (").append(conexion.getVertice1().getProvincia())
+	                .append(") ------ ").append(conexion.getVertice2().getNombre()).append(" (")
+	                .append(conexion.getVertice2().getProvincia()).append(") : ").append(conexion.getDistancia())
+	                .append("KM $").append(conexion.getCosto());
+	        cadena.append("\n");
+	    }
 
-		return cadena.toString();
+	    return cadena.toString();
 	}
 
 	public boolean isAGM() {

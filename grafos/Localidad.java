@@ -7,14 +7,12 @@ public class Localidad {
 
 	private String nombre;
 	private String provincia;
-
 	private float latitud;
 	private float longitud;
 	private HashMap<Integer, Localidad> localidades;
 
 
 	public Localidad(String nombre, String provincia, float latitud, float longitud) {
-
 		this.nombre = nombre;
 		this.provincia = provincia;
 		this.latitud = latitud;

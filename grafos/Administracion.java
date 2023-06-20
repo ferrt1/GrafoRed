@@ -5,27 +5,22 @@ import java.util.LinkedList;
 
 import java.util.Set;
 
-import org.openstreetmap.gui.jmapviewer.Coordinate;
-
-public class Sistema {
+public class Administracion {
 
 	private Grafo grafoAGM;
 	private Grafo grafoCompleto;
 	private Set<Localidad> localidadesCargadas;
-	private Set<ConectorLocalidades> conexionesEstablecidas;
 	private double costoPorKm= 0;
 	private double porcentajeSupera300Km= 0;
 	private double costoProvinciasDistintas = 0;
 
-	public Sistema() {
-	    localidadesCargadas = new HashSet<Localidad>(); // Usamos un Set ya que asi no se agregan localidades repetidas
-	    conexionesEstablecidas = new HashSet<ConectorLocalidades>();
+	public Administracion() {
+	    localidadesCargadas = new HashSet<Localidad>();
 	}
 	
 	public void finalizarCargaLocalidades() {
-	    grafoCompleto = new Grafo(new LinkedList<Localidad>(localidadesCargadas), costoPorKm,
+	    grafoCompleto = new Grafo(new LinkedList<Localidad>(getLocalidadesCargadas()), costoPorKm,
 	                    porcentajeSupera300Km, costoProvinciasDistintas);
-	    actualizarConexionesEstablecidas(grafoCompleto);
 	}
 
 	public boolean crearGrafoAGM() {
@@ -34,7 +29,6 @@ public class Sistema {
 		}
 		if (grafoCompleto != null) {
 			grafoAGM = AGM.generarPorPrim(grafoCompleto);
-			actualizarConexionesEstablecidas(grafoAGM);
 			return true;
 		}
 		return false;
@@ -50,26 +44,10 @@ public class Sistema {
 		return grafoCompleto;
 	}
 
-	private void actualizarConexionesEstablecidas(Grafo grafoActual) {
-		conexionesEstablecidas = new HashSet<ConectorLocalidades>();
-		for (ConectorLocalidades arista : grafoActual.getAristas()) {
-			conexionesEstablecidas.add(arista);
-		}
-	}
 
 	public boolean cargarLocalidad(String nombre, String provincia, Float latitud, Float longitud) {
 		Localidad localidad = new Localidad(nombre, provincia, latitud, longitud);
-		return localidadesCargadas.add(localidad);
-	}
-
-	
-	public Coordinate obtenerCoordenadasLocalidad(String nombre, String provincia) {
-		for (Localidad localidad : localidadesCargadas) {
-			if (localidad.getNombre().equals(nombre) && localidad.getProvincia().equals(provincia)) {
-				return new Coordinate(localidad.getLatitud(), localidad.getLongitud());
-			}
-		}
-		return null;
+		return getLocalidadesCargadas().add(localidad);
 	}
 	
 	public double obtenerCostoTotalAGM() {
@@ -84,10 +62,11 @@ public class Sistema {
 	}
 	
 	public void setPorcentajeSupera300Km(double precio) { 
-		if (precio < 0 ) {
-			throw new IllegalArgumentException("El porcentaje agregado si supera 300KM no puede ser negativo.");
+		if (precio < 0 || precio > 2 ) {
+			throw new IllegalArgumentException("El porcentaje agregado si supera 300KM no"
+					+ " puede ser negativo o mayor a 2.");
 		}
-		porcentajeSupera300Km=precio;
+		porcentajeSupera300Km = precio;
 	}
 	
 	public void setCostoProvinciaDistinta(double precio) {
@@ -95,7 +74,11 @@ public class Sistema {
 			throw new IllegalArgumentException(
 					"El costo fijo agregado por provincias distintas no puede ser negativo.");
 		}
-		costoProvinciasDistintas=precio;
+		costoProvinciasDistintas = precio;
+	}
+
+	public Set<Localidad> getLocalidadesCargadas() {
+		return localidadesCargadas;
 	}
 	
 }

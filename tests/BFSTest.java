@@ -1,10 +1,11 @@
 package tests;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-
 import static org.junit.Assert.assertTrue;
 
-import java.util.LinkedList;
+import java.util.HashSet;
+import java.util.Set;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -13,118 +14,62 @@ import grafos.BFS;
 import grafos.Grafo;
 import grafos.Localidad;
 
-public class BFSTest {	
-	
-	private Grafo g;
-	private Localidad jose_c_paz;
-	private Localidad san_miguel;
-	private Localidad pilar;
-	private Localidad bella_vista;
-	private Localidad moreno;
-	private Localidad villa_del_parque;
-	
-	double costoPorKm = 20;
-	double porcentajeSupera300Km = 0.2;
-	double costoProvinciasDistintas = 20;
-	
-	@Before
-	public void setup() {
-		jose_c_paz = new Localidad("Jose.C.Paz", "Buenos Aires", 20, 30);
-		san_miguel = new Localidad("San Miguel", "Buenos Aires", 50, 30);
-		pilar = new Localidad("Pilar", "Buenos Aires", 10, 30);
-		bella_vista = new Localidad("Bella Vista", "Buenos Aires", 70, 30);
-		moreno = new Localidad("Moreno", "Buenos Aires", 80, 42);
-		villa_del_parque = new Localidad("Villa Del Parque", "Buenos Aires", 48, 23);
-		g = new Grafo(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas);
-	}
-	
+public class BFSTest {
 
-	@Test
-	public void alcanzablesHappyTest() {
-		Grafo g = new Grafo(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
-		
-		g.agregarArista(jose_c_paz, bella_vista);
-		g.agregarArista(bella_vista, villa_del_parque);
-		g.agregarArista(villa_del_parque, san_miguel);
-		g.agregarArista(jose_c_paz, pilar);
-		
-		assertTrue(BFS.esConexo(g));
-	}
-	
-	
-	@Test
-	public void grafoInconexoTest() {
-		g = inicializarGrafoInconexo();
-		assertFalse(BFS.esConexo(g));
-	}
-	
-	
-	
-	@Test
-	public void grafoCompletoTest() {
-		g = inicializarGrafoCompleto();
-		assertTrue(BFS.esConexo(g));
-	}
-	
-	@Test
-	public void alcanzablesGrafoCompletoTest() {
-		LinkedList<Localidad> esperadas = new LinkedList<Localidad>();
-		esperadas.add(jose_c_paz);
-		esperadas.add(san_miguel);
-		esperadas.add(bella_vista);
-		esperadas.add(moreno);
-		esperadas.add(villa_del_parque);
-		esperadas.add(pilar);
-		
-		Grafo g = inicializarGrafoCompleto();
-		
-		for(Localidad alcanzada: BFS.obtenerAlcanzables(g, jose_c_paz)) {
-			assertTrue(esperadas.contains(alcanzada));
-		}
-	}
+    private Grafo grafo;
+    private Localidad buenosAires;
+    private Localidad cordoba;
+    private Localidad rosario;
+    private Localidad mendoza;
 
-	
-	@Test
-	public void alcanzablesInconexoTest() {
-		LinkedList<Localidad> esperadas = new LinkedList<Localidad>();
-		esperadas.add(jose_c_paz);
-		esperadas.add(moreno);
-		esperadas.add(pilar);
-		
-		g = inicializarGrafoInconexo();
-		
-		for(Localidad alcanzada: BFS.obtenerAlcanzables(g, jose_c_paz)) {
-			assertTrue(esperadas.contains(alcanzada));
-		}
-	}
-	
-	Grafo inicializarGrafoInconexo() {
+    @Before
+    public void setUp() {
+        // Crear el grafo de ejemplo
+        buenosAires = new Localidad("Buenos Aires", "Buenos Aires", -34.6037f, -58.3816f);
+        cordoba = new Localidad("Córdoba", "Córdoba", -31.4201f, -64.1888f);
+        rosario = new Localidad("Rosario", "Santa Fe", -32.9468f, -60.6393f);
+        mendoza = new Localidad("Mendoza", "Mendoza", -32.8908f, -68.8272f);
 
-		Grafo g = new Grafo(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
-		
-		g.agregarArista(jose_c_paz, moreno);
-		g.agregarArista(jose_c_paz, pilar);
-		g.agregarArista(villa_del_parque, san_miguel);
-		
-		return g;		
-	}
-	
-	Grafo inicializarGrafoCompleto() {
-		Grafo g = new Grafo(costoPorKm, porcentajeSupera300Km, costoProvinciasDistintas, jose_c_paz, pilar, san_miguel, villa_del_parque, bella_vista);
-		
-		g.agregarArista(jose_c_paz, pilar);
-		g.agregarArista(jose_c_paz, san_miguel);
-		g.agregarArista(jose_c_paz, villa_del_parque);
-		g.agregarArista(jose_c_paz, bella_vista);
-		g.agregarArista(pilar, san_miguel);
-		g.agregarArista(pilar, villa_del_parque);
-		g.agregarArista(pilar, bella_vista);
-		g.agregarArista(san_miguel, villa_del_parque);
-		g.agregarArista(san_miguel, bella_vista);
-		g.agregarArista(villa_del_parque, bella_vista);
+        grafo = new Grafo(1.0, 0.1, 0.2, buenosAires, cordoba, rosario, mendoza);
+        grafo.agregarArista(buenosAires, cordoba);
+        grafo.agregarArista(buenosAires, rosario);
+        grafo.agregarArista(cordoba, mendoza);
+    }
 
-		return g;		
-	}
+    @Test
+    public void testEsConexo() {
+        assertTrue(BFS.esConexo(grafo));
+    }
 
-	
+    @Test
+    public void testObtenerAlcanzables() {
+        Set<Localidad> alcanzables = BFS.obtenerAlcanzables(grafo, buenosAires);
+
+        Set<Localidad> expectedAlcanzables = new HashSet<>();
+        expectedAlcanzables.add(buenosAires);
+        expectedAlcanzables.add(cordoba);
+        expectedAlcanzables.add(rosario);
+        expectedAlcanzables.add(mendoza);
+        assertEquals(expectedAlcanzables, alcanzables);
+    }
+    @Test
+    public void testEsConexoGrafoNoConexo() {
+        Grafo grafoNoConexo = new Grafo(1.0, 0.1, 0.2, buenosAires, cordoba, rosario, mendoza);
+        assertFalse(BFS.esConexo(grafoNoConexo));
+    }
+
+    @Test (expected = NullPointerException.class)
+    public void testObtenerAlcanzablesDesdeLocalidadNoExistente() {
+        Localidad localidadNoExistente = new Localidad("San Juan", "San Juan", -31.5375f, -68.5364f);
+        Set<Localidad> alcanzables = BFS.obtenerAlcanzables(grafo, localidadNoExistente);
+        assertTrue(alcanzables.isEmpty());
+    }
+
+    @Test
+    public void testObtenerAlcanzablesDesdeLocalidadSinVecinos() {
+        Localidad localidadSinVecinos = new Localidad("Misiones", "Misiones", -26.8754f, -54.4583f);
+        grafo.agregarVertice(localidadSinVecinos);
+        Set<Localidad> alcanzables = BFS.obtenerAlcanzables(grafo, localidadSinVecinos);
+        assertTrue(alcanzables.contains(localidadSinVecinos));
+    }
 }

@@ -2,40 +2,39 @@ package tests;
 
 import static org.junit.Assert.*;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import grafos.*;
 
 public class CostoTest {
 
-//    @Test
-//    public void testCalcularCosto() {
-//        double costoPorKm = 20.0;
-//        double porcentajeExtra = 1.0;
-//        double costoExtraProvincias = 20.0;
-//
-//        Localidad[] localidades = new Localidad[]{
-//            new Localidad("Achiras", "Cordoba", -33.16667, -65.0),
-//            new Localidad("Alcaraz", "Entre Rios", -31.46667, -59.6),
-//            new Localidad("A de la Cruz", "Buenos Aires", -34.33333, -59.11667),
-//            new Localidad("Abramo", "La Pampa", -37.88333, -63.85),
-//            new Localidad("Achico", "Neuquen", -40.33333, -70.33333),
-//        };
-//        double costoTotalEsperado = 0.0;
-//        for(int i = 0; i < localidades.length - 1; i++) {
-//            costoTotalEsperado += Costo.obtenerCosto(
-//                localidades[i], 
-//                localidades[i + 1], 
-//                costoPorKm, 
-//                porcentajeExtra, 
-//                costoExtraProvincias);
-//        }
-//        assertEquals(costoTotalEsperado, Costo.obtenerCosto(
-//            localidades[0],
-//            localidades[localidades.length - 1],
-//            costoPorKm, 
-//            porcentajeExtra, 
-//            costoExtraProvincias), 0.0001);
-//    }
+    @Test
+    public void testCalcularDistancia() {
+        Localidad origen = new Localidad("Buenos Aires", "Buenos Aires", -34.6037f, -58.3816f);
+        Localidad destino = new Localidad("Córdoba", "Córdoba", -31.4201f, -64.1888f);
+
+        double distancia = Costo.calcularDistancia(origen, destino);
+
+        assertTrue(distancia > 600 && distancia < 700);
+    }
     
+    @Test
+    public void testObtenerCostoVariasLocalidades() {
+        Localidad origen = new Localidad("Achiras", "Cordoba", -33.16667f, -65.0f);
+        Localidad destino = new Localidad("Alcaraz", "Entre Rios", -31.46667f, -59.6f);
+
+        double costo = Costo.obtenerCosto(origen, destino, 0.5, 0.2, 100);
+        System.out.println("Costo de Achiras a Alcaraz: " + costo);
+
+        destino = new Localidad("A de la Cruz", "Buenos Aires", -34.33333f, -59.11667f);
+        costo = Costo.obtenerCosto(origen, destino, 0.5, 0.2, 100);
+        System.out.println("Costo de Achiras a A de la Cruz: " + costo);
+
+        destino = new Localidad("Abramo", "La Pampa", -37.88333f, -63.85f);
+        costo = Costo.obtenerCosto(origen, destino, 0.5, 0.2, 100);
+        System.out.println("Costo de Achiras a Abramo: " + costo);
+
+        destino = new Localidad("Achico", "Neuquen", -40.33333f, -70.33333f);
+        costo = Costo.obtenerCosto(origen, destino, 0.5, 0.2, 100);
+        System.out.println("Costo de Achiras a Achico: " + costo);
+    }
 }

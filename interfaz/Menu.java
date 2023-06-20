@@ -46,7 +46,7 @@ public class Menu {
 	private Color colorVerde = new Color(109, 212, 126);
 	private Font fuente = new Font("Segoe UI", Font.BOLD, 15);
 	private Localidad localidad = new Localidad(null, null, 0, 0);
-	private	Sistema sistema = new Sistema();
+	private	Administracion administrador = new Administracion();
 
 	private JTextField CostoPorKm;
 	private JTextField Costo300Km;
@@ -168,10 +168,7 @@ public class Menu {
 		btnSubmit.setBackground(colorVerde);
 		btnSubmit.setBorderPainted(false);
 		frame.getContentPane().add(btnSubmit);
-
 		nuevoPanelParaMapa();
-
-
 	}
 
 	public void nuevoPanelParaMapa() {
@@ -195,8 +192,8 @@ public class Menu {
 	public void agregarMarcador(double x, double y, String localidad) {
 		Coordinate cordenada = new Coordinate(x, y);
 		MapMarker marcador = new MapMarkerDot(localidad, cordenada);
-		marcador.getStyle().setBackColor(Color.blue);
-		marcador.getStyle().setColor(new Color(255, 251, 0));
+		marcador.getStyle().setBackColor(colorFondo);
+		marcador.getStyle().setColor(colorFondo);
 		mapa.addMapMarker(marcador);
 
 	}
@@ -205,7 +202,7 @@ public class Menu {
 		Coordinate cordenada1 = new Coordinate(x1, y1);
 		Coordinate cordenada2 = new Coordinate(x2, y2);
 		MapPolygon poligono = new MapPolygonImpl(peso, cordenada1, cordenada2, cordenada1);
-		poligono.getStyle().setColor(new Color(182, 179, 26));
+		poligono.getStyle().setColor(colorLetra);
 
 		mapa.addMapPolygon(poligono);
 	}
@@ -325,16 +322,15 @@ public class Menu {
 					Localidad nuevaLocalidad = new Localidad(nombre, provincia, latitud, longitud);
 
 
-					sistema.cargarLocalidad(textFieldNombre.getText(), textFieldProvincia.getText(), Float.parseFloat(textFieldLatitud.getText()), Float.parseFloat(textFieldLongitud.getText()));
+					administrador.cargarLocalidad(textFieldNombre.getText(), textFieldProvincia.getText(), Float.parseFloat(textFieldLatitud.getText()), Float.parseFloat(textFieldLongitud.getText()));
 
 					agregarLocalidadAlMapa(nuevaLocalidad);
 					JOptionPane.showMessageDialog(frame, "Localidad creada exitosamente!");
 					limpiarFormulario();
 					localidad.agregarLocalidad(localidad.tamanio()+1, nuevaLocalidad);
-					System.out.println(localidad.getLocalidades());
-					System.out.println(localidad.getLocalidades().size());
 				}
-				if(verificarLocalidadesMaximas(maximoInteger, localidad.getLocalidades().size())) {
+				
+				if(verificarLocalidadesMaximas(maximoInteger, administrador.getLocalidadesCargadas().size())) {
 					JOptionPane.showMessageDialog(frame, "Ha creado sus localidades!");
 					limpiarPantalla();
 					crearSeleccion();
@@ -385,9 +381,9 @@ public class Menu {
 	}
 
 	public double calcularPrecioYMostrarArbol() {
-		Grafo grafo = sistema.obtenerGrafoAGM();
+		Grafo grafo = administrador.obtenerGrafoAGM();
 		agregarAGM(grafo);
-		return sistema.obtenerCostoTotalAGM();
+		return administrador.obtenerCostoTotalAGM();
 	}
 
 	public void labelPrecio() {
@@ -404,7 +400,7 @@ public class Menu {
 	public boolean verificarCostos() {
 		boolean resultado = true;
 		try {
-			sistema.setCostoPorKm(Double.parseDouble(CostoPorKm.getText()));
+			administrador.setCostoPorKm(Double.parseDouble(CostoPorKm.getText()));
 		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(null, "El costo ingresado no es un número válido");
 			resultado = false;
@@ -413,10 +409,10 @@ public class Menu {
 			double porcentaje = Double.parseDouble(Costo300Km.getText());
 			if(porcentaje < 0 || porcentaje > 1) {
 				JOptionPane.showMessageDialog(null, 
-						"El porcentaje ingresado mayor a 300KM debe ser mayor o igual a 0");
+						"El porcentaje ingresado mayor a 300KM debe ser mayor o igual a 0 o menor a 2. Ej: 1.2");
 				resultado = false;
 			} else {
-				sistema.setPorcentajeSupera300Km(porcentaje);
+				administrador.setPorcentajeSupera300Km(porcentaje);
 			}
 		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(null, 
@@ -424,7 +420,7 @@ public class Menu {
 			resultado = false;
 		}
 		try {
-			sistema.setCostoProvinciaDistinta(Double.parseDouble(CostoProvDistintas.getText()));
+			administrador.setCostoProvinciaDistinta(Double.parseDouble(CostoProvDistintas.getText()));
 		} catch (Exception e2) {
 			JOptionPane.showMessageDialog(null, "El costo entre provincias ingresado no es un número válido");
 			resultado = false;
@@ -454,7 +450,7 @@ public class Menu {
 
 	public boolean verificarStringVacios(JTextField j) {
 		if(j.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(null, "No puede estar vacio");
+			JOptionPane.showMessageDialog(null, "No puede tener nombre o provincia vacios");
 			return false;
 		}
 		return true;
