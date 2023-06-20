@@ -1,33 +1,19 @@
 package grafos;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 
 public class Localidad {
-
 	private String nombre;
 	private String provincia;
 	private float latitud;
 	private float longitud;
-	private HashMap<Integer, Localidad> localidades;
-
 
 	public Localidad(String nombre, String provincia, float latitud, float longitud) {
 		this.nombre = nombre;
 		this.provincia = provincia;
 		this.latitud = latitud;
 		this.longitud = longitud;
-
-		localidades = new HashMap<Integer, Localidad>();
 	}
 
-	public void agregarLocalidad(Localidad localidad, LinkedList<Localidad> l) {
-		l.add(localidad);
-	}
-
-	public String buscarNombreLocalidad(Integer i) {
-		return localidades.get(i).getNombre();
-	}
 
 	@Override
 	public boolean equals(Object otraLocalidad) {
@@ -39,13 +25,7 @@ public class Localidad {
 				&& this.latitud == otra.getLatitud() && this.longitud == otra.getLongitud();
 	}
 
-	public void agregarLocalidad(Integer i, Localidad l) {
-		localidades.put(i-1, l);
-	}
 
-	public int tamanio() {
-		return localidades.size();
-	}
 
 	public float getLatitud() {
 		return latitud;
@@ -61,14 +41,6 @@ public class Localidad {
 
 	public void setLongitud(float longitud) {
 		this.longitud = longitud;
-	}
-
-	public HashMap<Integer, Localidad> getLocalidades() {
-		return localidades;
-	}
-
-	public void setLocalidades(HashMap<Integer, Localidad> localidades) {
-		this.localidades = localidades;
 	}
 
 	public String getNombre() {

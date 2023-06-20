@@ -31,7 +31,6 @@ import java.awt.event.ActionEvent;
 
 import java.awt.Panel;
 
-
 public class Menu {
 
 	private JFrame frame;
@@ -45,7 +44,6 @@ public class Menu {
 	private Color colorLetra = new Color(41, 50, 80);
 	private Color colorVerde = new Color(109, 212, 126);
 	private Font fuente = new Font("Segoe UI", Font.BOLD, 15);
-	private Localidad localidad = new Localidad(null, null, 0, 0);
 	private	Administracion administrador = new Administracion();
 
 	private JTextField CostoPorKm;
@@ -189,7 +187,7 @@ public class Menu {
 		return mapa;
 	}
 	
-	public void agregarMarcador(double x, double y, String localidad) {
+	public void agregarLocalidadMapa(double x, double y, String localidad) {
 		Coordinate cordenada = new Coordinate(x, y);
 		MapMarker marcador = new MapMarkerDot(localidad, cordenada);
 		marcador.getStyle().setBackColor(colorFondo);
@@ -198,7 +196,7 @@ public class Menu {
 
 	}
 
-	public void agregarPoligono(Float x1, Float y1, Float x2, Float y2, String peso) {
+	public void agregarPoligonoLocalidades(Float x1, Float y1, Float x2, Float y2, String peso) {
 		Coordinate cordenada1 = new Coordinate(x1, y1);
 		Coordinate cordenada2 = new Coordinate(x2, y2);
 		MapPolygon poligono = new MapPolygonImpl(peso, cordenada1, cordenada2, cordenada1);
@@ -211,10 +209,10 @@ public class Menu {
 		mapa.removeAllMapPolygons();
 		mapa.removeAllMapMarkers();
 		for(Localidad localidad:grafo.getLocalidades()) {
-			this.agregarMarcador(localidad.getLatitud(), localidad.getLongitud(), localidad.getNombre());
+			this.agregarLocalidadMapa(localidad.getLatitud(), localidad.getLongitud(), localidad.getNombre());
 		}
 		for (ConectorLocalidades cable : grafo.getAristas()) {
-			agregarPoligono(cable.getVertice1().getLatitud(), cable.getVertice1().getLongitud(),
+			agregarPoligonoLocalidades(cable.getVertice1().getLatitud(), cable.getVertice1().getLongitud(),
 					cable.getVertice2().getLatitud(), cable.getVertice2().getLongitud(),
 					cable.getCosto().toString());
 		}
@@ -327,7 +325,6 @@ public class Menu {
 					agregarLocalidadAlMapa(nuevaLocalidad);
 					JOptionPane.showMessageDialog(frame, "Localidad creada exitosamente!");
 					limpiarFormulario();
-					localidad.agregarLocalidad(localidad.tamanio()+1, nuevaLocalidad);
 				}
 				
 				if(verificarLocalidadesMaximas(maximoInteger, administrador.getLocalidadesCargadas().size())) {
@@ -335,10 +332,8 @@ public class Menu {
 					limpiarPantalla();
 					crearSeleccion();
 					panelActualizado();	        
-
 				}
 			}
-
 		});
 
 		btnCrearLocalidad.setBounds(200, 500, 150, 70);

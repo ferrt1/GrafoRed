@@ -16,14 +16,12 @@ public class GrafoTest {
 
     @Before
     public void setUp() {
-        // Crear la lista de localidades
         localidades = new LinkedList<>();
         localidades.add(new Localidad("Buenos Aires", "Buenos Aires", -34.6037f, -58.3816f));
         localidades.add(new Localidad("Córdoba", "Córdoba", -31.4201f, -64.1888f));
         localidades.add(new Localidad("Rosario", "Santa Fe", -32.9468f, -60.6393f));
         localidades.add(new Localidad("Mendoza", "Mendoza", -32.8908f, -68.8272f));
 
-        // Crear el grafo de ejemplo
         grafo = new Grafo(localidades, 1.0, 0.1, 0.2);
         grafo.agregarArista(localidades.get(0), localidades.get(1));
         grafo.agregarArista(localidades.get(0), localidades.get(2));

@@ -35,8 +35,6 @@ public class Grafo {
 		this.aristas = new LinkedList<ConectorLocalidades>();
 		costoTotal = 0.0;
 		
-		// Genera un grafo completo
-
 		for (Localidad localidad : listaVertices) {
 			agregarVertice(localidad);
 		}

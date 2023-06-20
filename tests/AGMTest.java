@@ -15,7 +15,6 @@ public class AGMTest {
 
     @Before
     public void setUp() {
-        // Crear el grafo completo de ejemplo
         buenosAires = new Localidad("Buenos Aires", "Buenos Aires", -34.6037f, -58.3816f);
         cordoba = new Localidad("Córdoba", "Córdoba", -31.4201f, -64.1888f);
         rosario = new Localidad("Rosario", "Santa Fe", -32.9468f, -60.6393f);
